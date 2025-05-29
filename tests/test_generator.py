@@ -3,7 +3,9 @@ from test_case_generator import TestCaseGenerator, TestCase
 
 
 def test_export_csv(tmp_path):
-    generator = TestCaseGenerator(model_name="google/flan-t5-base", load_model=False)
+
+    generator = TestCaseGenerator(load_model=False)
+
     cases = [
         TestCase(id=1, description="Login", steps="Open app", expected="Success"),
         TestCase(id=2, description="Logout", steps="Press logout", expected="Logged out"),

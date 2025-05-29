@@ -33,7 +33,9 @@ class TestCaseGenerator:
 
     def __init__(
         self,
-        model_name: str = "google/flan-t5-base",
+
+        model_name: str = "beomi/KoAlpaca-Polyglot-12.8B",
+
         test_case_dir: Optional[str] = None,
         load_model: bool = True,
     ) -> None:
@@ -78,11 +80,13 @@ class TestCaseGenerator:
         from langchain.prompts import PromptTemplate
 
         template = (
-            "You are a QA assistant generating test cases for the SmartThings app.\n"
-            "Here is the description of a new change:\n{change}\n"
-            "Here are related existing test cases:\n{context}\n"
-            "Provide a numbered list of test cases in the format:\n"
-            "ID. Description | Steps | Expected Result"
+
+            "당신은 SmartThings 앱의 테스트 케이스를 작성하는 QA 어시스턴트입니다.\n"
+            "다음은 새로운 변경 사항에 대한 설명입니다:\n{change}\n"
+            "관련된 기존 테스트 케이스는 다음과 같습니다:\n{context}\n"
+            "다음 형식으로 번호가 매겨진 테스트 케이스 목록을 작성해 주세요:\n"
+            "ID. 설명 | 단계 | 예상 결과"
+
         )
         prompt = PromptTemplate.from_template(template)
         return prompt.format(change=change_desc, context=context)
@@ -134,7 +138,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate SmartThings test cases.")
     parser.add_argument("description", help="Text describing the change")
     parser.add_argument("--image", help="Optional image description", default=None)
-    parser.add_argument("--model", help="Hugging Face model name", default="google/flan-t5-base")
+
+    parser.add_argument("--model", help="Hugging Face model name", default="beomi/KoAlpaca-Polyglot-12.8B")
+
     parser.add_argument("--test-case-dir", help="Directory of existing test case txt files")
     parser.add_argument("--output", help="Output CSV file", default="test_cases.csv")
     parser.add_argument("--no-model", action="store_true", help="Skip loading the language model")
