@@ -12,6 +12,7 @@ python pyramid.py 5
 
 ## SmartThings Test Case Generator
 
+
 `test_case_generator.py` creates test cases from a description of app changes.
 It uses a Korean Hugging Face model via LangChain. Existing test cases can be
 supplied in a directory of `.txt` files to provide additional context. If no

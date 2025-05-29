@@ -1,5 +1,6 @@
 """LLM-based SmartThings test case generator.
 
+
 This script provides utilities to generate test cases from textual and
 optional image inputs using a Hugging Face model. Existing test case
 files can be included in the context using a simple retrieval step and
@@ -9,6 +10,7 @@ without any external files.
 
 The implementation uses LangChain for compatibility so that the
 underlying model can be swapped easily.
+
 """
 
 from __future__ import annotations
@@ -20,11 +22,13 @@ from typing import Iterable, List, Optional
 import csv
 
 
+
 DEFAULT_CASES = [
     "로그인 기능 | 앱 실행 후 로그인 정보를 입력한다 | 로그인 성공 메시지가 표시된다",
     "로그아웃 기능 | 설정 화면에서 로그아웃 버튼을 누른다 | 로그아웃되고 로그인 화면이 나타난다",
     "프로필 수정 | 프로필 화면에서 이름을 변경한다 | 변경된 이름이 저장된다",
 ]
+
 
 @dataclass
 class TestCase:
@@ -41,13 +45,16 @@ class TestCaseGenerator:
 
     def __init__(
         self,
+
         model_name: str = "beomi/KoAlpaca-Polyglot-12.8B",
+
         test_case_dir: Optional[str] = None,
         load_model: bool = True,
     ) -> None:
         self.llm = None
         self.tokenizer = None
         if load_model:
+
             try:
                 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
                 from langchain.llms import HuggingFacePipeline
@@ -94,6 +101,7 @@ class TestCaseGenerator:
         except Exception:
             self.vectorstore = None
 
+
     def _retrieve_context(self, query: str, k: int = 2) -> str:
         """Retrieve similar test cases as additional context."""
         if not self.vectorstore:
@@ -106,11 +114,13 @@ class TestCaseGenerator:
         from langchain.prompts import PromptTemplate
 
         template = (
+
             "당신은 SmartThings 앱의 QA 어시스턴트입니다.\n"
             "다음은 새로운 변경 사항에 대한 설명입니다:\n{change}\n"
             "관련된 기존 테스트 케이스는 다음과 같습니다:\n{context}\n"
             "아래 형식으로 번호가 매겨진 테스트 케이스를 제시하세요:\n"
             "번호. 설명 | 절차 | 기대 결과"
+
         )
         prompt = PromptTemplate.from_template(template)
         return prompt.format(change=change_desc, context=context)
@@ -162,11 +172,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate SmartThings test cases.")
     parser.add_argument("description", help="Text describing the change")
     parser.add_argument("--image", help="Optional image description", default=None)
+
     parser.add_argument(
         "--model",
         help="Hugging Face model name",
         default="beomi/KoAlpaca-Polyglot-12.8B",
     )
+
     parser.add_argument("--test-case-dir", help="Directory of existing test case txt files")
     parser.add_argument("--output", help="Output CSV file", default="test_cases.csv")
     parser.add_argument("--no-model", action="store_true", help="Skip loading the language model")
