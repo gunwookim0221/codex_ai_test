@@ -91,10 +91,92 @@
 
 ------------------------------------------------------------
 [작성 지침]  
-(변경 없음 – 그대로 유지)  
+
+1. Change Summary와 Title 작성  
+- Change Summary: [앱 변경사항 요약 정보] 를 기반으로 작성하세요.  
+  • 기술 용어나 축약된 표현은 일반 사용자가 이해하기 쉬운 표현으로 풀어쓰세요.  
+  • 핵심 변경 사항만 간결하게 요약하세요.  
+  • 테스트 케이스가 여러 개 생성되더라도 Change Summary는 모든 TC에서 동일해야 합니다.  
+  • '사용자 입장에서 어떤 변화인지'를 설명하는 자연스러운 한국어 문장으로 작성하세요.  
+  예시:  
+    입력: "Automation menu now supports adding weather condition as trigger"  
+    출력: "자동화 메뉴에 날씨 조건을 추가할 수 있도록 기능이 개선됨"  
+
+- Title: 테스트 목적이 잘 드러나는 간결한 제목으로 작성하세요.  
+  예: "자동화 조건에 날씨 추가 기능 확인"  
+
+2. 테스트 수 & 목적 다양성  
+- 총 1~5개, 각 TC는 서로 다른 목적/시나리오, 중복 금지.  
+
+3. UI 기반 검증  
+- SmartThings UI/UX 관찰로 기능 확인.  
+
+4. 메뉴트리 활용  
+- [변경 사항과 관련될거라 예상 되는 메뉴트리] 중 가장 유사한 경로 사용.  
+- Home/Devices/Life/Automations 탭의 “+ / optional” 분기 고려.  
+- 변경사항 확인 이전 단계 경로가 있으면 반드시 포함.  
+
+5. 서술 표준화  
+- Test Procedure(허용): 선택, 탭, 입력, 토글, 저장 선택, 뒤로 가기 선택.  
+- Expected Result(허용): “화면 표시됨”, “상태가 On으로 표시됨”, “메시지 ‘…’ 표시됨”.  
+- 메뉴트리에 없는 보강 단계는 자연스럽게 문장으로 작성한다.  
+- 단말 내부 동작(OS/타앱/알림 등)은 자연스럽게 서술하되 태그는 출력하지 않는다.  
+
+6. Change Summary  
+- 요약 + 쉬운 용어로 풀어서 작성.  
+
+7. 출력은 반드시 CSV 변환 가능한 JSON 배열이어야 한다.  
+아래 Schema에 맞지 않는 출력은 모두 잘못된 것으로 간주된다.  
+
+[
+  {
+    "REQ ID": "(req_key)",
+    "Change Summary": "string",
+    "Title": "string",
+    "Pre-condition": "> ...\n> ...",
+    "Test Procedure": "1. ...\n2. ...",
+    "Expected Result": "1. ...\n2. ..."
+  }
+]  
+제약:  
+- JSON 이외 텍스트(설명/코드펜스/주석) 금지.  
+- 줄바꿈은 항상 \n 문자열만 사용.  
+- 배열, 객체 중첩 금지. 단순 문자열 필드만.  
+- 규칙 위반 시 빈 배열 [] 만 출력.  
 
 ------------------------------------------------------------
 [자체 검증 체크리스트]  
 
 - Expected Result에 행동 동사가 없는가?  
-- Test Procedure 단계 수 = Expected Result 단
+- Test Procedure 단계 수 = Expected Result 단계 수인가?  
+- 메뉴트리 경로(상위 → 하위)가 Test Procedure에 모두 포함되었는가?  
+- **Test Procedure의 첫 단계가 반드시 제공된 메뉴트리의 최상위 노드인가? (임의의 Home/Devices/Life/Automations 단계가 추가되지 않았는가?)**  
+- 각 단계의 Expected Result가 메뉴트리 예상결과와 대응되는가?  
+- 메뉴트리에 없는 단계만 새로운 Expected Result를 작성했는가?  
+- Pre-condition 항목이 Test Procedure에 재작성되지 않았는가?  
+- 앱 내부 setup/onboarding/prepare device 흐름이 Pre-condition에 잘못 포함되지 않았는가?  
+- 기기 외부 동작은 Pre-condition에만 기술했는가?  
+- SmartThings 앱에서 벗어난 경우 복귀 단계가 있는가?  
+- 대상 기기 필터링이 적용되었는가?  
+- TC 수 1~5개, 목적 다양성 확보되었는가?  
+- Expected Result에 **컨트롤/액션 언급(버튼/탭/선택/… “~ 시”)이 남아 있지 않은가? → 모두 ‘표시/상태’ 표현으로 치환했는가?**  
+- 목적지 화면/상태만 남기고 **행동 원인(“선택/클릭/진입”)**은 제거했는가?  
+- 모든 TC의 REQ ID가 동일하게 (req_key)로 유지되었는가?  
+- 모든 TC의 Change Summary가 동일한 내용으로 유지되었는가?  
+- 최종 답변 전 **json 기반 구조**의 답변이 맞는지 다시 한번 검토 되었는가? 검토 후 json 파일로 변환이 불가능하다고 판단 되면 다시 json 파일에 맞는 양식으로 변경 후 답변을 해야 함  
+
+------------------------------------------------------------
+[출력 예시]  
+
+[  
+  {  
+    "REQ ID": "REQ-12345",  
+    "Change Summary": "자동화 조건에 날씨 추가 기능이 개선되어 사용자가 더 쉽게 조건을 설정할 수 있음.",  
+    "Title": "자동화에 날씨 조건 추가 UI 동작 확인",  
+    "Pre-condition": "> SmartThings 앱 설치됨\n> 사용자 로그인됨\n> 허브가 온라인 상태\n> SmartThings 루틴 5개가 이미 생성되어 있음",  
+    "Test Procedure": "1. Devices 탭 선택\n2. Optional menu 선택\n3. Room status settings 선택",  
+    "Expected Result": "1. Common (Home/+/Optional) 메뉴가 표시됨\n2. 메뉴들이 표시됨\n3. 방 요약 설정 화면으로 이동됨"  
+  }  
+]  
+
+------------------------------------------------------------
