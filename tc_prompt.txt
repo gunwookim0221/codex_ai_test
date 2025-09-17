@@ -19,12 +19,23 @@
 
 2. 메뉴트리 경로 1:1 매핑 (압축 금지)  
 - 메뉴트리 상위 → 하위 노드를 건너뛰지 않고 단계별로 분리한다.  
+예: Home > + button > Add Device 라는 메뉴트리 경로가 있으면 Test Procedure에는
+1. Home 선택
+2. button 선택
+3. Add Device 선택
+처럼 각각의 노드를 독립 단계로 작성해야 한다.
+한 줄에 병합하거나 압축 표현(Home > + button > …)을 사용하는 경우 출력은 무효([]) 처리한다.
+
 - Test Procedure는 메뉴트리의 "메뉴 트리"를 분해하여 상위 단계부터 순서대로 작성한다.  
 - Test Procedure에서는 메뉴트리에서 제공된 텍스트(영어 포함)는 그대로 사용하며, 한글 번역하지 않는다.  
 - 메뉴트리에 없는 일반 UI 단계는 자연스럽게 한국어로 작성한다.  
 - 고유명(브랜드명, 기능명, 버튼 라벨)은 그대로 유지한다.  
 - **Test Procedure는 반드시 제공된 메뉴트리의 최상위 노드부터 시작해야 하며, 임의로 Home/Devices/Life/Automations 같은 초기 단계를 추가할 수 없다.**  
 - 메뉴트리에 루트 노드(Home/Devices/Life/Automations)가 포함되어 있는 경우에만 해당 루트부터 시작할 수 있다.  
+- **추가 규칙:**  
+  • 메뉴트리에 존재하는 단계는 동사 **“선택”** 으로 작성한다.  
+  • 메뉴트리에 없는 단계(추론 단계)는 동사 **“진입”** 으로 작성한다.  
+  • 메뉴트리 단계에 “진입”을 쓰거나, 추론 단계에 “선택”을 쓰는 경우는 잘못된 것으로 간주한다.  
 
 3. 조건·절차 중복 제거  
 - Pre-condition = 앱 외부 준비/시스템/계정/디바이스 상태만 작성한다.  
@@ -33,6 +44,7 @@
 - Pre-condition 항목이 Test Procedure에 다시 기술되면 안 됨.  
   예: “루틴 5개 생성됨”은 Pre-condition에만 작성, Test Procedure에서는 “루틴 목록 표시 확인”만 허용.  
 - Expected Result는 해당 확인의 관찰 결과만 작성한다.  
+-“Easy Setup, Onboarding, Prepare device, Add device 등 SmartThings 앱 내의 화면 전환/진입/선택 동작은 절대 Pre-condition에 넣지 않는다. 반드시 Test Procedure에 포함해야 한다. 만약 Pre-condition에 작성하려 한다면 출력은 무효([])로 처리한다.”
 
 4. 앱 범위/단말 범위 구분  
 - 앱 내부: SmartThings UI/기능 → 절차 포함.  
@@ -48,7 +60,9 @@
 - 번호 형식: "1. …\n2. …"  
 
 7. 메뉴트리 예상결과 활용  
-- Expected Result는 메뉴트리의 "현재 단계 예상결과"와 "상위 단계 예상결과"를 반드시 반영한다.  
+- Expected Result는 메뉴트리에 대응되는 구간까지는 반드시 메뉴트리의 “현재 단계 예상결과” 또는 “상위 단계 예상결과”를 기반으로 작성한다.
+메뉴트리에 없는 이후 구간에 대해서는 변경사항 요약 및 screen/entity/action 정보를 근거로 합리적으로 추론하여 Expected Result를 작성할 수 있다.
+단, 메뉴트리에 존재하는 예상결과를 무시하거나 대체해서는 안 되며, 메뉴트리 기반 구간과 추론 기반 구간은 구분하여 작성해야 한다.
 - Expected Result는 한국어로 작성하되, 실제 UI 라벨/메뉴 텍스트(Add, Done, Weather 등)는 영어 그대로 표기한다.  
 - 영어로 제공되는 경우 의미를 변형하지 않고 한국어로 설명하되, UI에 표시되는 실제 텍스트는 번역하지 않는다.  
 - 메뉴트리에 없는 단계만 새 Expected Result를 작성한다.  
@@ -83,11 +97,12 @@
 10. 생성 후 자체 검증 – 필수 수행  
 - Expected Result 전 문장에서 금지 동사가 제거되었는지 확인하고, 있으면 해당 문장을 즉시 수정한다.  
 - Test Procedure와 Expected Result의 단계 수가 동일한지 확인한다.  
-- 메뉴트리 기반 단계는 반드시 메뉴트리 예상결과를 사용했는지 확인한다.  
+- 메뉴트리 기반 단계는 반드시 메뉴트리에 존재하는 예상결과(현재 단계 예상결과 또는 상위 단계 예상결과)를 사용했는지 확인한다.  
 
 11. REQ ID 고정 규칙  
 - 모든 TC의 "REQ ID" 값은 반드시 동일해야 하며, 입력값 (req_key)을 그대로 사용한다.  
 - TC 수가 여러 개더라도 REQ ID를 증가/변경하지 않는다.  
+
 
 ------------------------------------------------------------
 [작성 지침]  
@@ -112,12 +127,13 @@
 - SmartThings UI/UX 관찰로 기능 확인.  
 
 4. 메뉴트리 활용  
-- [변경 사항과 관련될거라 예상 되는 메뉴트리] 중 가장 유사한 경로 사용.  
-- Home/Devices/Life/Automations 탭의 “+ / optional” 분기 고려.  
+- [변경 사항과 관련될거라 예상 되는 메뉴트리] 중 가장 유사한 경로를 사용한다.
+메뉴트리에 포함된 구간까지는 반드시 해당 예상결과를 사용한다.
+메뉴트리에 포함되지 않은 이후 구간은 변경사항 요약과 screen/entity/action 정보를 근거로 합리적으로 추론하여 Expected Result를 작성한다.
 - 변경사항 확인 이전 단계 경로가 있으면 반드시 포함.  
 
 5. 서술 표준화  
-- Test Procedure(허용): 선택, 탭, 입력, 토글, 저장 선택, 뒤로 가기 선택.  
+- Test Procedure(허용): 선택, 진입, 탭, 입력, 토글, 저장 선택, 뒤로 가기 선택.  
 - Expected Result(허용): “화면 표시됨”, “상태가 On으로 표시됨”, “메시지 ‘…’ 표시됨”.  
 - 메뉴트리에 없는 보강 단계는 자연스럽게 문장으로 작성한다.  
 - 단말 내부 동작(OS/타앱/알림 등)은 자연스럽게 서술하되 태그는 출력하지 않는다.  
@@ -148,11 +164,14 @@
 [자체 검증 체크리스트]  
 
 - Expected Result에 행동 동사가 없는가?  
-- Test Procedure 단계 수 = Expected Result 단계 수인가?  
+- Test Procedure의 각 단계가 메뉴트리 노드 단위로 정확히 분리되었는가?
+- Test Procedure 단계 수와 Expected Result 단계 수가 일치 하는가? (Test Procedure 5개면 Expected Result도 5개여야 한다)
 - 메뉴트리 경로(상위 → 하위)가 Test Procedure에 모두 포함되었는가?  
 - **Test Procedure의 첫 단계가 반드시 제공된 메뉴트리의 최상위 노드인가? (임의의 Home/Devices/Life/Automations 단계가 추가되지 않았는가?)**  
-- 각 단계의 Expected Result가 메뉴트리 예상결과와 대응되는가?  
-- 메뉴트리에 없는 단계만 새로운 Expected Result를 작성했는가?  
+- 각 단계의 Expected Result가 메뉴트리 예상결과와 대응되는가? (메뉴트리 구간까지는 반드시 매핑)
+- 메뉴트리에 없는 이후 구간은 합리적 추론으로 작성되었는가? (추론 여부를 구분할 수 있어야 함)
+- 메뉴트리에 있는 구간의 예상결과를 임의로 대체하지 않았는가?
+- Test Procedure에서 메뉴트리 기반 단계는 “선택”, 추론 기반 단계는 “진입”으로 작성되었는가?
 - Pre-condition 항목이 Test Procedure에 재작성되지 않았는가?  
 - 앱 내부 setup/onboarding/prepare device 흐름이 Pre-condition에 잘못 포함되지 않았는가?  
 - 기기 외부 동작은 Pre-condition에만 기술했는가?  
@@ -164,8 +183,10 @@
 - 모든 TC의 REQ ID가 동일하게 (req_key)로 유지되었는가?  
 - 모든 TC의 Change Summary가 동일한 내용으로 유지되었는가?  
 - 최종 답변 전 **json 기반 구조**의 답변이 맞는지 다시 한번 검토 되었는가? 검토 후 json 파일로 변환이 불가능하다고 판단 되면 다시 json 파일에 맞는 양식으로 변경 후 답변을 해야 함  
+- “Pre-condition에 Easy Setup, Onboarding, Prepare, Add device 등 **앱 내부 화면/플로우 관련 용어가 포함되었는지 확인한다. 포함 시 출력은 무효([]).”
 
-------------------------------------------------------------
+
+-----------------------------------------------
 [출력 예시]  
 
 [  
@@ -174,8 +195,8 @@
     "Change Summary": "자동화 조건에 날씨 추가 기능이 개선되어 사용자가 더 쉽게 조건을 설정할 수 있음.",  
     "Title": "자동화에 날씨 조건 추가 UI 동작 확인",  
     "Pre-condition": "> SmartThings 앱 설치됨\n> 사용자 로그인됨\n> 허브가 온라인 상태\n> SmartThings 루틴 5개가 이미 생성되어 있음",  
-    "Test Procedure": "1. Devices 탭 선택\n2. Optional menu 선택\n3. Room status settings 선택",  
-    "Expected Result": "1. Common (Home/+/Optional) 메뉴가 표시됨\n2. 메뉴들이 표시됨\n3. 방 요약 설정 화면으로 이동됨"  
+    "Test Procedure": "1. Home 탭 선택\n2. + button 선택\n3. Add Device 선택",  
+    "Expected Result": "1. Common (Home/+/Optional) 메뉴가 표시됨\n2. Add 페이지 진입\n3. Add device 페이지 진입"  
   }  
 ]  
 
