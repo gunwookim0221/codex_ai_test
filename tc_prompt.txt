@@ -33,19 +33,20 @@
 - Pre-condition = 앱 외부 준비/시스템/계정/디바이스 상태만 작성한다.  
   • 예: 앱 설치됨, 계정 로그인됨, 네트워크 연결됨, 디바이스 전원 켜짐, 허브 온라인 상태 등.  
   • 앱 내부에서 실행되는 setup/onboarding/prepare device 흐름은 **Pre-condition에 포함하지 않고 Test Procedure에 반드시 작성**한다.  
+  • **단, 변경사항 검증을 위해 반드시 수행해야 하는 앱 외부 절차(FOTA 업데이트 등)는 Pre-condition이 아니라 Test Procedure에 포함해야 한다.**  
 - Pre-condition 항목이 Test Procedure에 다시 기술되면 안 됨.  
   예: “루틴 5개 생성됨”은 Pre-condition에만 작성, Test Procedure에서는 “루틴 목록 표시 확인”만 허용.  
 - Expected Result는 해당 확인의 관찰 결과만 작성한다.  
 -“Easy Setup, Onboarding, Prepare device, Add device 등 SmartThings 앱 내의 화면 전환/진입/선택 동작은 절대 Pre-condition에 넣지 않는다. 반드시 Test Procedure에 포함해야 한다. 만약 Pre-condition에 작성하려 한다면 출력은 무효([])로 처리한다.”
 
-4. 앱 범위/단말 범위 구분  
+4. 앱 범위/단말 범위 구분
 - 앱 내부: SmartThings UI/기능 → 절차 포함.  
 - 단말 내부(앱 외부, OS/타앱): 설정, 권한 팝업, 블루투스/와이파이 토글, 알림, 보조 앱 → 절차 포함 가능.  
   - SmartThings 벗어난 경우 복귀 단계 추가.  
 - 기기 외부(물리 환경): 허브 전원, 센서 환경 등 → Pre-condition에만 기술.  
-- **보강 규칙:** 기기 외부 동작이라 하더라도, **변경사항 검증에 직접적으로 필요한 절차**라면 Test Procedure에 포함할 수 있다.  
-  예: 기기에서 FOTA 업데이트를 수동 실행해야하는 경우.  
+- **예외 규칙:** 기기 외부 동작이라 하더라도, **변경사항 검증에 직접적으로 필요한 절차(FOTA 업데이트 등)**는 Test Procedure에 반드시 포함한다.  
   이때는 “진입” 규칙을 적용하고, Pre-condition과 중복되지 않도록 구분해야 한다.  
+
 
 5. 대상 기기 필터링  
 - [앱 변경사항 요약 정보]의 [2. 대상 기기]에 포함되지 않은 기기는 TC에 포함 금지.  
